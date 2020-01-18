@@ -1,0 +1,6 @@
+[submodule "portal-framework-common"]
+	path = portal-framework-common
+	url = https://github.com/YukinaMochizuki/portal-framework-common.git
+[submodule "portal-framework-api"]
+	path = portal-framework-api
+	url = https://github.com/YukinaMochizuki/portal-framework-api.git
