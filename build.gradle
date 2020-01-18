@@ -43,6 +43,9 @@ dependencies {
     // This dependency is used by the application.
     implementation 'com.google.guava:guava:28.0-jre'
 
+    implementation project(path:':portal-framework-api', configuration: 'default')
+    implementation project(path:':portal-framework-common', configuration: 'default')
+
     // Use JUnit test framework
     testImplementation 'junit:junit:4.12'
     testImplementation('org.springframework.boot:spring-boot-starter-test') {

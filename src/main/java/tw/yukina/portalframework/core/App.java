@@ -3,6 +3,8 @@
  */
 package tw.yukina.portalframework.core;
 
+import tw.yukina.portalframework.api.*;
+
 public class App {
     public String getGreeting() {
         return "Hello world.";
@@ -10,5 +12,7 @@ public class App {
 
     public static void main(String[] args) {
         System.out.println(new App().getGreeting());
+        Library library = new Library();
+        System.out.println(library.someLibraryMethod());
     }
 }
