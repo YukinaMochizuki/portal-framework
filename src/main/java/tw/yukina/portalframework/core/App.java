@@ -4,15 +4,52 @@
 package tw.yukina.portalframework.core;
 
 import tw.yukina.portalframework.api.*;
+import tw.yukina.portalframework.core.util.*;
+
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
+import java.io.FileInputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Properties;
+import java.util.List;
 
 public class App {
+    private static final Logger logger = LogManager.getLogger(App.class);
+    private static final String MODULE_FOLDER_DEFINE_PROPERTIES = "application.properties";
+
     public String getGreeting() {
         return "Hello world.";
     }
 
     public static void main(String[] args) {
-        System.out.println(new App().getGreeting());
         Library library = new Library();
         System.out.println(library.someLibraryMethod());
+        
+        try {
+            logger.info("Module Folder Define in " + MODULE_FOLDER_DEFINE_PROPERTIES);
+            Path path = FilesUtility.getOrCreateFile(MODULE_FOLDER_DEFINE_PROPERTIES);
+            
+            Properties appProps = new Properties();
+            appProps.load(new FileInputStream(path.toString()));
+
+            String moduleFolderPathString = appProps.getProperty("module.folder", "module");
+            logger.info("Loding Module Folder " + moduleFolderPathString + " ...");
+
+            Path moduleFolderPath = FilesUtility.getOrCreateDirectory(moduleFolderPathString);
+            
+            ModuleFileVisitor moduleFileVisitor = new ModuleFileVisitor();
+            Files.walkFileTree(moduleFolderPath, moduleFileVisitor);
+
+            List<Path> jarVisitorPathArrayList = moduleFileVisitor.getPathArrayList();
+
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public void start(){
+        
     }
 }
