@@ -67,7 +67,7 @@ dependencies {
 
 application {
     // Define the main class for the application
-    mainClassName = 'tw.yukina.portalframework.core.App'
+    mainClassName = 'tw.yukina.portalframework.core.Launcher'
 }
 
 //test {
