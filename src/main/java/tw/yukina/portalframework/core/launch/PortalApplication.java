@@ -51,8 +51,8 @@ public class PortalApplication {
 
             for (ClassPath.ClassInfo classInfo : classPath.getAllClasses()) {
                 if (classInfo.getName().compareTo("tw.yukina.portalframework.core.App") == 0) {
-                    Class mainClass = classInfo.load();
-                    Object mainObject = mainClass.newInstance();
+                    Class<?> mainClass = classInfo.load();
+                    Object mainObject = mainClass.getDeclaredConstructor().newInstance();
                     Method startMethod = mainClass.getDeclaredMethod("start",URLClassLoader.class);
                     startMethod.setAccessible(true);
                     startMethod.invoke(mainObject,jarUrlClassLoader);
