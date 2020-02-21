@@ -1,10 +1,15 @@
 package tw.yukina.portalframework.core.launch;
 
-import tw.yukina.portalframework.api.*;
 import tw.yukina.portalframework.api.launch.LaunchArgs;
+import tw.yukina.portalframework.core.annotation.BaseDependency;
+import tw.yukina.portalframework.core.inject.module.*;
 import tw.yukina.portalframework.core.util.*;
+import tw.yukina.portalframework.core.service.*;
 
 import com.google.common.reflect.ClassPath;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import com.google.inject.AbstractModule;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -16,18 +21,18 @@ import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Properties;
+import java.util.Set;
 import java.util.List;
 import java.util.ArrayList;
+import java.io.IOException;
 
 public class PortalApplication {
     private static final Logger logger = LogManager.getLogger(PortalApplication.class);
     private static final String MODULE_FOLDER_DEFINE_PROPERTIES = "application.properties";
 
     public static void run(LaunchArgs configure) {
-        Library library = new Library();
-        System.out.println(library.someLibraryMethod());
-        
         List<URL> jarUrlList = new ArrayList<>();
+
         try {
             logger.info("Module Folder Define in " + MODULE_FOLDER_DEFINE_PROPERTIES);
             Path path = FilesUtility.getOrCreateFile(MODULE_FOLDER_DEFINE_PROPERTIES);
@@ -50,12 +55,12 @@ public class PortalApplication {
             ClassPath classPath = ClassPath.from(jarUrlClassLoader);
 
             for (ClassPath.ClassInfo classInfo : classPath.getAllClasses()) {
-                if (classInfo.getName().compareTo("tw.yukina.portalframework.core.App") == 0) {
+                if (classInfo.getName().compareTo("tw.yukina.portalframework.core.launch.PortalApplication") == 0) {
                     Class<?> mainClass = classInfo.load();
                     Object mainObject = mainClass.getDeclaredConstructor().newInstance();
-                    Method startMethod = mainClass.getDeclaredMethod("start",URLClassLoader.class);
+                    Method startMethod = mainClass.getDeclaredMethod("start", LaunchArgs.class, List.class, URLClassLoader.class);
                     startMethod.setAccessible(true);
-                    startMethod.invoke(mainObject,jarUrlClassLoader);
+                    startMethod.invoke(mainObject, configure, jarVisitorPathArrayList, jarUrlClassLoader);
                 }
             }
 
@@ -64,9 +69,26 @@ public class PortalApplication {
         }
     }
 
-    public void start(URLClassLoader urlClassLoader){
-        System.out.println("YA");
+    public void start(LaunchArgs launchArgs, List<Path> moduleJarPath, URLClassLoader urlClassLoader){
+        Injector injector = Guice.createInjector(new AutoScanListenerModule());
+        ServiceManager serviceManager = injector.getInstance(ServiceManager.class);
+        serviceManager.startInit();
+        
+        //try {
+        //    getBaseInjector();
+        //} catch(Exception e){
+        //    e.printStackTrace();
+        //}
+    }
 
+    public Injector getBaseInjector() throws IOException{
 
+      Set<Class<?>> baseDependencyClassSet = AnnotationScanner.packageAnnotationScanRecursive(BaseDependency.class, "tw.yukina.portalframework.core", PortalApplication.class.getClassLoader());
+
+      for (Class<?> baseDependencyClass : baseDependencyClassSet){
+        if(AbstractModule.class.isAssignableFrom(baseDependencyClass) && !baseDependencyClass.isInterface())System.out.println("YA!" + baseDependencyClass.getName());
+      }
+
+      return null;
     }
 }
