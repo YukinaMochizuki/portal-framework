@@ -73,3 +73,8 @@ application {
 //test {
 //    useJUnitPlatform()
 //}
+//test {
+//    testLogging {
+//        showStandardStreams = true
+//    }
+//}
