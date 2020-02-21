@@ -5,6 +5,7 @@ import com.google.common.reflect.ClassPath;
 import java.lang.reflect.*;
 import java.lang.annotation.Annotation;
 import java.util.*;
+import java.io.IOException;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -13,16 +14,64 @@ public class AnnotationScanner {
  
     private static final Logger logger = LogManager.getLogger(AnnotationScanner.class);
 
+    public static Set<Class<?>> packageClassScan(String packageName, ClassPath classPath){
+        Set<Class<?>> hasAnnotationSet = new HashSet<>();
+
+        for(ClassPath.ClassInfo classInfo : classPath.getTopLevelClasses(packageName)){
+            hasAnnotationSet.add(classInfo.load());
+        }
+        return hasAnnotationSet;
+    }
+
+    public static Set<Class<?>> packageClassScan(String packageName, ClassLoader classLoader) throws IOException{
+        Set<Class<?>> hasAnnotationSet = new HashSet<>();
+
+        for(ClassPath.ClassInfo classInfo : ClassPath.from(classLoader).getTopLevelClasses(packageName)){
+            hasAnnotationSet.add(classInfo.load());
+        }
+        return hasAnnotationSet;
+    }
+
+    public static Set<Class<?>> packageClassScanRecursive(String packageName, ClassPath classPath){
+        Set<Class<?>> hasAnnotationSet = new HashSet<>();
+
+        for(ClassPath.ClassInfo classInfo : classPath.getTopLevelClassesRecursive(packageName)){
+            hasAnnotationSet.add(classInfo.load());
+        }
+        return hasAnnotationSet;
+    }
+
+    public static Set<Class<?>> packageClassScanRecursive(String packageName, ClassLoader classLoader) throws IOException{
+        Set<Class<?>> hasAnnotationSet = new HashSet<>();
+
+        for(ClassPath.ClassInfo classInfo : ClassPath.from(classLoader).getTopLevelClassesRecursive(packageName)){
+            hasAnnotationSet.add(classInfo.load());
+        }
+        return hasAnnotationSet;
+    }
+    
+    public static Map<Class<? extends Annotation>, Set<Class<?>>> packageAnnotationsScan(Set<Class<? extends Annotation>> annotations, String packageName, ClassLoader classLoader) throws IOException{
+        return packageAnnotationsScan(annotations, packageName, ClassPath.from(classLoader));
+    }
+
     public static Map<Class<? extends Annotation>, Set<Class<?>>> packageAnnotationsScan(Set<Class<? extends Annotation>> annotations, String packageName, ClassPath classPath){
         Map<Class<? extends Annotation>, Set<Class<?>>> hasAnnotationsMap = new HashMap<>();
         for(Class<? extends Annotation> annotation : annotations)hasAnnotationsMap.put(annotation, packageAnnotationScan(annotation, packageName, classPath));
         return hasAnnotationsMap;
     }
 
+    public static Map<Class<? extends Annotation>, Set<Class<?>>> packageAnnotationsScanRecursive(Set<Class<? extends Annotation>> annotations, String packageName, ClassLoader classLoader) throws IOException{
+        return packageAnnotationsScanRecursive(annotations, packageName, ClassPath.from(classLoader));
+    }
+
     public static Map<Class<? extends Annotation>, Set<Class<?>>> packageAnnotationsScanRecursive(Set<Class<? extends Annotation>> annotations, String packageName, ClassPath classPath){
         Map<Class<? extends Annotation>, Set<Class<?>>> hasAnnotationsMap = new HashMap<>();
         for(Class<? extends Annotation> annotation : annotations)hasAnnotationsMap.put(annotation, packageAnnotationScanRecursive(annotation, packageName, classPath));
         return hasAnnotationsMap;
+    }
+
+    public static Set<Class<?>> packageAnnotationScan(Class<? extends Annotation> annotation, String packageName, ClassLoader classLoader) throws IOException{
+        return packageAnnotationScan(annotation, packageName, ClassPath.from(classLoader));
     }
 
     public static Set<Class<?>> packageAnnotationScan(Class<? extends Annotation> annotation, String packageName, ClassPath classPath){
@@ -32,6 +81,10 @@ public class AnnotationScanner {
             if(isClassHasAnnotation(annotation, classInfo.load())) hasAnnotationSet.add(classInfo.load());
         }
         return hasAnnotationSet;
+    }
+
+    public static Set<Class<?>> packageAnnotationScanRecursive(Class<? extends Annotation> annotation, String packageName, ClassLoader classLoader) throws IOException{
+        return packageAnnotationScanRecursive(annotation, packageName, ClassPath.from(classLoader));
     }
 
     public static Set<Class<?>> packageAnnotationScanRecursive(Class<? extends Annotation> annotation, String packageName, ClassPath classPath){
