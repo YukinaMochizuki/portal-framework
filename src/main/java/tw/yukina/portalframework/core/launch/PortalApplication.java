@@ -2,6 +2,7 @@ package tw.yukina.portalframework.core.launch;
 
 import tw.yukina.portalframework.api.launch.LaunchArgs;
 import tw.yukina.portalframework.core.annotation.BaseDependency;
+import tw.yukina.portalframework.core.inject.factory.ContainerModuleFactory;
 import tw.yukina.portalframework.core.inject.module.*;
 import tw.yukina.portalframework.core.util.*;
 import tw.yukina.portalframework.core.service.*;
@@ -51,6 +52,8 @@ public class PortalApplication {
             List<Path> jarVisitorPathArrayList = moduleFileVisitor.getPathArrayList();
             for(Path jarPath : jarVisitorPathArrayList) jarUrlList.add(jarPath.toUri().toURL());
 
+            logger.info("Find " + jarUrlList.size() + " module file(s)");
+
             URLClassLoader jarUrlClassLoader = new URLClassLoader((URL[]) jarUrlList.toArray(new URL[0]));
             ClassPath classPath = ClassPath.from(jarUrlClassLoader);
 
@@ -63,14 +66,20 @@ public class PortalApplication {
                     startMethod.invoke(mainObject, configure, jarVisitorPathArrayList, jarUrlClassLoader);
                 }
             }
-
         } catch(Exception e){
             e.printStackTrace();
         }
     }
 
     public void start(LaunchArgs launchArgs, List<Path> moduleJarPath, URLClassLoader urlClassLoader){
-        Injector injector = Guice.createInjector(new AutoScanBaseDependModule());
+        AbstractModule abstractModule = new AbstractModule(){
+            @Override
+            protected void configure(){
+                bind(URLClassLoader.class).toInstance(urlClassLoader);
+            }
+        };
+
+        Injector injector = Guice.createInjector(new AutoScanBaseDependModule(), abstractModule);
         ServiceManager serviceManager = injector.getInstance(ServiceManager.class);
         serviceManager.startInit(injector);
     }

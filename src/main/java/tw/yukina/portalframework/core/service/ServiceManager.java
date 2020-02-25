@@ -8,12 +8,15 @@ import tw.yukina.portalframework.core.service.annotation.Component;
 import tw.yukina.portalframework.core.service.annotation.Service;
 import tw.yukina.portalframework.core.service.event.*;
 import tw.yukina.portalframework.core.service.filter.ServiceClassFilter;
+import tw.yukina.portalframework.core.util.AnnotationScanner;
 
 import org.apache.logging.log4j.Logger;
 
 import java.util.*;
+import java.net.URLClassLoader;
 
 import com.google.common.eventbus.EventBus;
+import com.google.common.reflect.ClassPath;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
@@ -39,6 +42,9 @@ public class ServiceManager {
     @Inject
     private EventBus eventBus;
 
+    @Inject
+    private URLClassLoader urlClassLoader;
+
     private Injector injector;
 
     public void startInit(Injector injector){
@@ -60,6 +66,20 @@ public class ServiceManager {
 
     @Subscribe
     private void onLoadComplete(LoadCompleteEvent loadCompleteEvent){
+        try {
+            System.out.println(AnnotationScanner.packageClassScan("test.module", urlClassLoader).size());
+
+            ClassPath classPath = ClassPath.from(urlClassLoader);
+
+            for (ClassPath.ClassInfo classInfo : classPath.getAllClasses()) {
+                if (classInfo.getName().compareTo("tw.yukina.portalframework.core.service.ServiceManager") == 0) {
+                    logger.info("Find module class !!!");
+                    System.out.println(classInfo.load().equals(ServiceManager.class));
+                }
+            }
+        } catch(Exception e){
+          e.printStackTrace();
+        }
         logger.info("Service load complete");
 
     }
