@@ -7,7 +7,7 @@ import static java.lang.annotation.ElementType.*;
 
 @Target({TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Service {
+public @interface Component {
     public Class<?> bindInterface() default void.class;
     public String[] tags() default {};
 }
