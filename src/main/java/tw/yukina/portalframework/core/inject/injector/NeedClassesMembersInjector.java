@@ -5,7 +5,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import tw.yukina.portalframework.core.inject.dependency.*;
-import tw.yukina.portalframework.core.annotation.BaseDependency;
 import tw.yukina.portalframework.core.inject.annotation.NeedClasses;
 import tw.yukina.portalframework.core.util.AnnotationScanner;
 
@@ -13,7 +12,6 @@ import java.lang.reflect.Field;
 import java.util.Set;
 import java.util.HashSet;
 
-@BaseDependency
 public class NeedClassesMembersInjector<T> implements MembersInjector<T> {
     private final Field field;
     private Logger logger = LogManager.getLogger(NeedClassesMembersInjector.class.getName());
