@@ -54,7 +54,8 @@ public class ServiceManager {
         configureAndInit(preInitClassesSet.getClassSet(), (Object) new PreInitializationEvent());
         configureAndInit(initClassesSet.getClassSet(), (Object) new InitializationEvent());
         configureAndInit(postInitClassesSet.getClassSet(), (Object) new PostInitializationEvent());
-        configureAndInit(postInitClassesSet.getClassSet(), (Object) new LoadCompleteEvent());
+
+        eventBus.post(new LoadCompleteEvent());
     } 
 
     @Subscribe
