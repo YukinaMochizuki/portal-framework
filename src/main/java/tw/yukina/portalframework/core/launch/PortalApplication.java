@@ -70,25 +70,8 @@ public class PortalApplication {
     }
 
     public void start(LaunchArgs launchArgs, List<Path> moduleJarPath, URLClassLoader urlClassLoader){
-        Injector injector = Guice.createInjector(new AutoScanListenerModule());
+        Injector injector = Guice.createInjector(new AutoScanBaseDependModule());
         ServiceManager serviceManager = injector.getInstance(ServiceManager.class);
-        serviceManager.startInit();
-        
-        //try {
-        //    getBaseInjector();
-        //} catch(Exception e){
-        //    e.printStackTrace();
-        //}
-    }
-
-    public Injector getBaseInjector() throws IOException{
-
-      Set<Class<?>> baseDependencyClassSet = AnnotationScanner.packageAnnotationScanRecursive(BaseDependency.class, "tw.yukina.portalframework.core", PortalApplication.class.getClassLoader());
-
-      for (Class<?> baseDependencyClass : baseDependencyClassSet){
-        if(AbstractModule.class.isAssignableFrom(baseDependencyClass) && !baseDependencyClass.isInterface())System.out.println("YA!" + baseDependencyClass.getName());
-      }
-
-      return null;
+        serviceManager.startInit(injector);
     }
 }
