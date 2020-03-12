@@ -32,15 +32,15 @@ public class NeedClassesMembersInjector<T> implements MembersInjector<T> {
                     classFilterSet.add((ClassFilter)classFilterClass.getDeclaredConstructor().newInstance());
             }
 
-            if(needClasses.basePackage() == "" && needClasses.basePackageInjector().equals(DefaultBasePackageInjector.class)){
+            if(needClasses.basePackage().equals("") && needClasses.basePackageInjector().equals(DefaultBasePackageInjector.class)){
                 logger.error("To be inject NeedClasses you must given a base package");
                 return;
-            }else if(needClasses.basePackage() != "" && !needClasses.basePackageInjector().equals(DefaultBasePackageInjector.class)){
+            }else if(!needClasses.basePackage().equals("") && !needClasses.basePackageInjector().equals(DefaultBasePackageInjector.class)){
                 logger.error("To be inject NeedClasses you only can given a base package");
                 return;
             }
         
-            if(needClasses.basePackage() != ""){
+            if(!needClasses.basePackage().equals("")){
                 Set<Class<?>> checkClassSet = AnnotationScanner.packageClassScanRecursive(needClasses.basePackage(), NeedClassesMembersInjector.class.getClassLoader());
                 
                 for (Class<?> checkClass : checkClassSet){
