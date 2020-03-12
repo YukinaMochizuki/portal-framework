@@ -30,6 +30,12 @@ public class ServiceManager {
     @NeedClasses(basePackage = "tw.yukina.portalframework.core", filters = {ServiceClassFilter.class, InitClassFilter.class})
     private NeedClassesSet initClassesSet;
 
+    @NeedClasses(basePackage = "tw.yukina.portalframework.core", filters = {ServiceClassFilter.class, StepValidateClassFilter.class})
+    private NeedClassesSet stepValidateClassesSet;
+
+    @NeedClasses(basePackage = "tw.yukina.portalframework.core", filters = {ServiceClassFilter.class, JobValidateClassFilter.class})
+    private NeedClassesSet jobValidateClassesSet;
+
     @NeedClasses(basePackage = "tw.yukina.portalframework.core", filters = {ServiceClassFilter.class, PostInitClassFilter.class})
     private NeedClassesSet postInitClassesSet;
 
@@ -51,14 +57,19 @@ public class ServiceManager {
         this.injector = injector;
 
         logger.info("Starting to initialization all service");
+
         logger.trace("preInitClassesSet.size() is " + preInitClassesSet.getClassSet().size());
         logger.trace("initClassesSet.size() is " + initClassesSet.getClassSet().size());
+        logger.trace("stepValidateClassesSet.size() is " + stepValidateClassesSet.getClassSet().size());
+        logger.trace("jobValidateClassesSet.size() is " + jobValidateClassesSet.getClassSet().size());
         logger.trace("postInitClassesSet.size() is " + postInitClassesSet.getClassSet().size());
 
         eventBus.register(this);
 
         configureAndInit(preInitClassesSet.getClassSet(), (Object) new PreInitializationEvent());
         configureAndInit(initClassesSet.getClassSet(), (Object) new InitializationEvent());
+        configureAndInit(stepValidateClassesSet.getClassSet(), (Object) new StepValidateEvent());
+        configureAndInit(jobValidateClassesSet.getClassSet(), (Object) new JobValidateEvent());
         configureAndInit(postInitClassesSet.getClassSet(), (Object) new PostInitializationEvent());
 
         eventBus.post(new LoadCompleteEvent());
@@ -67,8 +78,6 @@ public class ServiceManager {
     @Subscribe
     private void onLoadComplete(LoadCompleteEvent loadCompleteEvent){
         try {
-            System.out.println(AnnotationScanner.packageClassScan("test.module", urlClassLoader).size());
-
             ClassPath classPath = ClassPath.from(urlClassLoader);
 
             for (ClassPath.ClassInfo classInfo : classPath.getAllClasses()) {
@@ -81,7 +90,6 @@ public class ServiceManager {
           e.printStackTrace();
         }
         logger.info("Service load complete");
-
     }
 
     @Subscribe

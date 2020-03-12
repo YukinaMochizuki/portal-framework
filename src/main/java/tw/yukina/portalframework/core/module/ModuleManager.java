@@ -20,6 +20,6 @@ public class ModuleManager {
 
     @Subscribe
     public void onPreInit(PreInitializationEvent preInitializationEvent){
-        //logger.info("Module on preInit !!!");
+        logger.info("Module on preInit !!!");
     }
 }
