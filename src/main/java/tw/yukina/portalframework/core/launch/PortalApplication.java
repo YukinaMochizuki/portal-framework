@@ -31,6 +31,8 @@ public class PortalApplication {
     private static final Logger logger = LogManager.getLogger(PortalApplication.class);
     private static final String MODULE_FOLDER_DEFINE_PROPERTIES = "application.properties";
 
+    public static URLClassLoader jarUrlClassLoader;
+
     public static void run(LaunchArgs configure) {
         List<URL> jarUrlList = new ArrayList<>();
 
@@ -54,7 +56,7 @@ public class PortalApplication {
 
             logger.info("Find " + jarUrlList.size() + " module file(s)");
 
-            URLClassLoader jarUrlClassLoader = new URLClassLoader((URL[]) jarUrlList.toArray(new URL[0]));
+            PortalApplication.jarUrlClassLoader = new URLClassLoader((URL[]) jarUrlList.toArray(new URL[0]));
             ClassPath classPath = ClassPath.from(jarUrlClassLoader);
 
             for (ClassPath.ClassInfo classInfo : classPath.getAllClasses()) {

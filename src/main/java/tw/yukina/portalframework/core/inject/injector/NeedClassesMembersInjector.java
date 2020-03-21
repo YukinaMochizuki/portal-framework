@@ -6,6 +6,7 @@ import org.apache.logging.log4j.Logger;
 
 import tw.yukina.portalframework.core.inject.dependency.*;
 import tw.yukina.portalframework.core.inject.annotation.NeedClasses;
+import tw.yukina.portalframework.core.launch.PortalApplication;
 import tw.yukina.portalframework.core.util.AnnotationScanner;
 
 import java.lang.reflect.Field;
@@ -41,7 +42,7 @@ public class NeedClassesMembersInjector<T> implements MembersInjector<T> {
             }
         
             if(!needClasses.basePackage().equals("")){
-                Set<Class<?>> checkClassSet = AnnotationScanner.packageClassScanRecursive(needClasses.basePackage(), NeedClassesMembersInjector.class.getClassLoader());
+                Set<Class<?>> checkClassSet = AnnotationScanner.packageClassScanRecursive(needClasses.basePackage(), PortalApplication.jarUrlClassLoader);
                 
                 for (Class<?> checkClass : checkClassSet){
                     boolean flag = true;
