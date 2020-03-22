@@ -77,19 +77,7 @@ public class ServiceManager {
 
     @Subscribe
     private void onLoadComplete(LoadCompleteEvent loadCompleteEvent){
-        try {
-            ClassPath classPath = ClassPath.from(urlClassLoader);
-
-            for (ClassPath.ClassInfo classInfo : classPath.getAllClasses()) {
-                if (classInfo.getName().compareTo("tw.yukina.portalframework.core.service.ServiceManager") == 0) {
-                    logger.info("Find module class !!!");
-                    System.out.println(classInfo.load().equals(ServiceManager.class));
-                }
-            }
-        } catch(Exception e){
-          e.printStackTrace();
-        }
-        logger.info("Service load complete");
+        logger.info("Services load complete");
     }
 
     @Subscribe

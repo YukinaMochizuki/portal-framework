@@ -5,7 +5,6 @@ import tw.yukina.portalframework.core.inject.dependency.ClassFilter;
 
 public class ServiceClassFilter implements ClassFilter{
     public boolean check(Class<?> checkClass){
-        if((checkClass.isAnnotationPresent(Service.class) || checkClass.isAnnotationPresent(Component.class)) && !checkClass.isInterface())return true;
-        else return false;
+        return (checkClass.isAnnotationPresent(Service.class) || checkClass.isAnnotationPresent(Component.class)) && !checkClass.isInterface();
     }
 }
