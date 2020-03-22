@@ -44,7 +44,7 @@ public class PortalApplication {
             appProps.load(new FileInputStream(path.toString()));
 
             String moduleFolderPathString = appProps.getProperty("module.folder", "module");
-            logger.info("Loding Module Folder " + moduleFolderPathString + " ...");
+            logger.info("Loading Module Folder " + moduleFolderPathString + " ...");
 
             Path moduleFolderPath = FilesUtility.getOrCreateDirectory(moduleFolderPathString);
             
