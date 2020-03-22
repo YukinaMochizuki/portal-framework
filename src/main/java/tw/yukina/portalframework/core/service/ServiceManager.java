@@ -50,11 +50,18 @@ public class ServiceManager {
     private EventBus eventBus;
 
     @Inject
+    private Properties appProperties;
+
+    @Inject
     private URLClassLoader urlClassLoader;
+
+    public static List<String> moduleBasePackages;
 
     private Injector injector;
 
     public void startInit(Injector injector){
+        findModuleBasePackages();
+
         this.injector = injector;
 
         logger.info("Starting to initialization all service");
@@ -87,6 +94,14 @@ public class ServiceManager {
         eventBus.post(new FrameworkStopped());
     }
 
+    private void findModuleBasePackages(){
+        moduleBasePackages = new ArrayList<>();
+        String value;
+        for(int i = 0; (value = appProperties.getProperty("module.basePackages" + "." + i)) != null; i++) {
+            moduleBasePackages.add(value);
+        }
+    }
+
     private void configureAndInit(Set<Class<?>> initClassSet, Object event){
         Set<Class<?>> singletonDependencySet = new HashSet<>();
 
@@ -108,5 +123,9 @@ public class ServiceManager {
         }
 
         eventBus.post(event);
+    }
+
+    public List<String> getModuleBasePackages() {
+        return moduleBasePackages;
     }
 }

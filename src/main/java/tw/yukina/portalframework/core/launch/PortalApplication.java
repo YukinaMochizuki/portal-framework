@@ -1,8 +1,6 @@
 package tw.yukina.portalframework.core.launch;
 
 import tw.yukina.portalframework.api.launch.LaunchArgs;
-import tw.yukina.portalframework.core.annotation.BaseDependency;
-import tw.yukina.portalframework.core.inject.factory.ContainerModuleFactory;
 import tw.yukina.portalframework.core.inject.module.*;
 import tw.yukina.portalframework.core.util.*;
 import tw.yukina.portalframework.core.service.*;
@@ -22,16 +20,15 @@ import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Properties;
-import java.util.Set;
 import java.util.List;
 import java.util.ArrayList;
-import java.io.IOException;
 
 public class PortalApplication {
     private static final Logger logger = LogManager.getLogger(PortalApplication.class);
     private static final String MODULE_FOLDER_DEFINE_PROPERTIES = "application.properties";
 
     public static URLClassLoader jarUrlClassLoader;
+    public static Properties appProperties;
 
     public static void run(LaunchArgs configure) {
         List<URL> jarUrlList = new ArrayList<>();
@@ -40,10 +37,10 @@ public class PortalApplication {
             logger.info("Module Folder Define in " + MODULE_FOLDER_DEFINE_PROPERTIES);
             Path path = FilesUtility.getOrCreateFile(MODULE_FOLDER_DEFINE_PROPERTIES);
             
-            Properties appProps = new Properties();
-            appProps.load(new FileInputStream(path.toString()));
+            appProperties = new Properties();
+            appProperties.load(new FileInputStream(path.toString()));
 
-            String moduleFolderPathString = appProps.getProperty("module.folder", "module");
+            String moduleFolderPathString = appProperties.getProperty("module.folder", "module");
             logger.info("Loading Module Folder " + moduleFolderPathString + " ...");
 
             Path moduleFolderPath = FilesUtility.getOrCreateDirectory(moduleFolderPathString);
@@ -78,6 +75,7 @@ public class PortalApplication {
             @Override
             protected void configure(){
                 bind(URLClassLoader.class).toInstance(urlClassLoader);
+                bind(Properties.class).toInstance(appProperties);
             }
         };
 
