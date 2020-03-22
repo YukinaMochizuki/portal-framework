@@ -12,6 +12,8 @@ import static java.lang.annotation.ElementType.*;
 public @interface NeedClasses {
      public String basePackage() default "";
 
+     public String[] basePackages() default "";
+
      public Class<? extends BasePackageInjector> basePackageInjector() default DefaultBasePackageInjector.class;
 
      public Class<? extends ClassFilter>[] filters();

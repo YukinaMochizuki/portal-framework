@@ -28,41 +28,58 @@ public class NeedClassesMembersInjector<T> implements MembersInjector<T> {
         NeedClasses needClasses = field.getAnnotation(NeedClasses.class);
 
         try {
+            for (Class<? extends ClassFilter> classFilterClass : needClasses.filters())
+                    classFilterSet.add(classFilterClass.getDeclaredConstructor().newInstance());
 
-            for (Class<? extends ClassFilter> classFilterClass : needClasses.filters()) {
-                    classFilterSet.add((ClassFilter)classFilterClass.getDeclaredConstructor().newInstance());
-            }
-
-            if(needClasses.basePackage().equals("") && needClasses.basePackageInjector().equals(DefaultBasePackageInjector.class)){
+            if(needClasses.basePackage().equals("") && needClasses.basePackages().length == 0
+                    && needClasses.basePackageInjector().equals(DefaultBasePackageInjector.class)){
                 logger.error("To be inject NeedClasses you must given a base package");
                 return;
-            }else if(!needClasses.basePackage().equals("") && !needClasses.basePackageInjector().equals(DefaultBasePackageInjector.class)){
-                logger.error("To be inject NeedClasses you only can given a base package");
+//                TODO Need to be optimized
+            }else if((!needClasses.basePackage().equals("") && !needClasses.basePackages()[0].equals("")
+                            && !needClasses.basePackageInjector().equals(DefaultBasePackageInjector.class)) ||
+                    (needClasses.basePackage().equals("") && !needClasses.basePackages()[0].equals("")
+                            && !needClasses.basePackageInjector().equals(DefaultBasePackageInjector.class)) ||
+                    (!needClasses.basePackage().equals("") && needClasses.basePackages()[0].equals("")
+                            && !needClasses.basePackageInjector().equals(DefaultBasePackageInjector.class)) ||
+                    (!needClasses.basePackage().equals("") && !needClasses.basePackages()[0].equals("")
+                            && needClasses.basePackageInjector().equals(DefaultBasePackageInjector.class)) ){
+                logger.error("To be inject NeedClasses you only can given a base package injector");
                 return;
             }
         
             if(!needClasses.basePackage().equals("")){
                 Set<Class<?>> checkClassSet = AnnotationScanner.packageClassScanRecursive(needClasses.basePackage(), PortalApplication.jarUrlClassLoader);
                 
-                for (Class<?> checkClass : checkClassSet){
-                    boolean flag = true;
-                    for(ClassFilter classFilter : classFilterSet)if(!classFilter.check(checkClass))flag = false;
-                    if(flag)classSet.add(checkClass);
-                }
+                for (Class<?> checkClass : checkClassSet)
+                    checkClassAndPut(checkClass, classFilterSet, classSet);
 
+            }else if(!needClasses.basePackages()[0].equals("")) {
+                for(String basePackage : needClasses.basePackages()){
+                    Set<Class<?>> checkClassSet = AnnotationScanner.packageClassScanRecursive(basePackage, PortalApplication.jarUrlClassLoader);
+
+                    for (Class<?> checkClass : checkClassSet)
+                        checkClassAndPut(checkClass, classFilterSet, classSet);
+                }
             }else if(!needClasses.basePackageInjector().equals(DefaultBasePackageInjector.class)){
                 BasePackageInjector basePackageInjector = (BasePackageInjector)needClasses.basePackageInjector().getDeclaredConstructor().newInstance();
-                Set<Class<?>> checkClassSet = AnnotationScanner.packageClassScan(basePackageInjector.getBasePackage(), NeedClassesMembersInjector.class.getClassLoader());
 
-                for (Class<?> checkClass : checkClassSet){
-                    boolean flag = true;
-                    for(ClassFilter classFilter : classFilterSet)if(!classFilter.check(checkClass))flag = false;
-                    if(flag)classSet.add(checkClass);
+                for(String basePackage : basePackageInjector.getBasePackages()) {
+                    Set<Class<?>> checkClassSet = AnnotationScanner.packageClassScanRecursive(basePackage, PortalApplication.jarUrlClassLoader);
+
+                    for (Class<?> checkClass : checkClassSet)
+                        checkClassAndPut(checkClass, classFilterSet, classSet);
                 }
             }
         } catch(Exception e){
           e.printStackTrace();
         }
+    }
+
+    private void checkClassAndPut(Class<?> checkClass, Set<ClassFilter> classFilterSet, Set<Class<?>> classSet){
+        boolean flag = true;
+        for(ClassFilter classFilter : classFilterSet)if(!classFilter.check(checkClass))flag = false;
+        if(flag)classSet.add(checkClass);
     }
 
     public void injectMembers(T t) {
