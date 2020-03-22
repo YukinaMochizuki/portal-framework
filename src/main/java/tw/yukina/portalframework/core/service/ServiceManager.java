@@ -22,6 +22,7 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Singleton;
 
+@SuppressWarnings("UnstableApiUsage")
 public class ServiceManager {
 
     @NeedClasses(basePackage = "tw.yukina.portalframework.core", filters = {ServiceClassFilter.class, PreInitClassFilter.class})
@@ -66,11 +67,11 @@ public class ServiceManager {
 
         eventBus.register(this);
 
-        configureAndInit(preInitClassesSet.getClassSet(), (Object) new PreInitializationEvent());
-        configureAndInit(initClassesSet.getClassSet(), (Object) new InitializationEvent());
-        configureAndInit(stepValidateClassesSet.getClassSet(), (Object) new StepValidateEvent());
-        configureAndInit(jobValidateClassesSet.getClassSet(), (Object) new JobValidateEvent());
-        configureAndInit(postInitClassesSet.getClassSet(), (Object) new PostInitializationEvent());
+        configureAndInit(preInitClassesSet.getClassSet(), new PreInitializationEvent());
+        configureAndInit(initClassesSet.getClassSet(), new InitializationEvent());
+        configureAndInit(stepValidateClassesSet.getClassSet(), new StepValidateEvent());
+        configureAndInit(jobValidateClassesSet.getClassSet(), new JobValidateEvent());
+        configureAndInit(postInitClassesSet.getClassSet(),  new PostInitializationEvent());
 
         eventBus.post(new LoadCompleteEvent());
     } 
