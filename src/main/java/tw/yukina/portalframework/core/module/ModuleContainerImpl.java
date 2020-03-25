@@ -8,6 +8,7 @@ import tw.yukina.portalframework.api.module.ModuleContainer;
 import tw.yukina.portalframework.api.module.annotation.Module;
 import tw.yukina.portalframework.api.step.StepContainer;
 
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -42,7 +43,8 @@ public class ModuleContainerImpl implements ModuleContainer {
     }
 
     public ModuleContainerImpl(Class<?> moduleClass, Injector injector) throws TypeNotMatchException {
-        if(!moduleClass.isAnnotationPresent(Module.class)) throw new TypeNotMatchException();
+        if(!(moduleClass.isAnnotationPresent(Module.class) &&
+                (!moduleClass.isInterface() && !Modifier.isAbstract(moduleClass.getModifiers())))) throw new TypeNotMatchException();
 
         this.moduleClass = moduleClass;
         this.moduleObject = injector.getInstance(moduleClass);

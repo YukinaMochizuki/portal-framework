@@ -35,8 +35,6 @@ public class ModuleManager implements tw.yukina.portalframework.api.module.Modul
     @NeedClasses(basePackageInjector = ModuleBasePackagesInjector.class, filters = ModuleFilter.class)
     private NeedClassesSet moduleClassesSet;
 
-//    private Injector moduleInjector;
-
     private List<ModuleContainer> moduleContainerList;
 
     @Subscribe
