@@ -1,5 +1,6 @@
 package tw.yukina.portalframework.core.inject.injector;
 
+import com.google.inject.Injector;
 import com.google.inject.MembersInjector;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -7,6 +8,7 @@ import org.apache.logging.log4j.Logger;
 import tw.yukina.portalframework.core.inject.dependency.*;
 import tw.yukina.portalframework.core.inject.annotation.NeedClasses;
 import tw.yukina.portalframework.core.launch.PortalApplication;
+import tw.yukina.portalframework.core.service.ServiceManager;
 import tw.yukina.portalframework.core.util.AnnotationScanner;
 
 import java.lang.reflect.Field;
@@ -15,10 +17,12 @@ import java.util.HashSet;
 
 public class NeedClassesMembersInjector<T> implements MembersInjector<T> {
     private final Field field;
-    private Logger logger = LogManager.getLogger(NeedClassesMembersInjector.class.getName());
     private final NeedClassesSet needClassesSet;
+    private Logger logger = LogManager.getLogger(NeedClassesMembersInjector.class.getName());
 
     public NeedClassesMembersInjector(Field field) {
+        Injector injector = ServiceManager.getInjector();
+
         this.field = field;
         field.setAccessible(true);
 
@@ -28,13 +32,16 @@ public class NeedClassesMembersInjector<T> implements MembersInjector<T> {
         NeedClasses needClasses = field.getAnnotation(NeedClasses.class);
 
         try {
-            for (Class<? extends ClassFilter> classFilterClass : needClasses.filters())
-                    classFilterSet.add(classFilterClass.getDeclaredConstructor().newInstance());
+            for (Class<? extends ClassFilter> classFilterClass : needClasses.filters()) {
+                if(injector == null) classFilterSet.add(classFilterClass.getDeclaredConstructor().newInstance());
+                else classFilterSet.add(injector.getInstance(classFilterClass));
+            }
 
             if(needClasses.basePackage().equals("") && needClasses.basePackages().length == 0
                     && needClasses.basePackageInjector().equals(DefaultBasePackageInjector.class)){
                 logger.error("To be inject NeedClasses you must given a base package");
                 return;
+
 //                TODO Need to be optimized
             }else if((!needClasses.basePackage().equals("") && !needClasses.basePackages()[0].equals("")
                             && !needClasses.basePackageInjector().equals(DefaultBasePackageInjector.class)) ||

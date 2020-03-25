@@ -10,6 +10,7 @@ import java.io.IOException;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
+@SuppressWarnings("UnstableApiUsage")
 public class AnnotationScanner {
  
     private static final Logger logger = LogManager.getLogger(AnnotationScanner.class);

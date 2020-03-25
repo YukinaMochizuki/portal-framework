@@ -57,12 +57,12 @@ public class ServiceManager {
 
     public static List<String> moduleBasePackages;
 
-    private Injector injector;
+    private static Injector injector;
 
     public void startInit(Injector injector){
         findModuleBasePackages();
 
-        this.injector = injector;
+        ServiceManager.injector = injector;
 
         logger.info("Starting to initialization all service");
 
@@ -107,8 +107,15 @@ public class ServiceManager {
 
         for(Class<?> initClass : initClassSet){
             Class<?> type = null;
-            if(initClass.isAnnotationPresent(Component.class))type = initClass.getAnnotation(Component.class).bindInterface().equals(void.class) ? initClass : initClass.getAnnotation(Component.class).bindInterface();
-            if(initClass.isAnnotationPresent(Service.class))type = initClass.getAnnotation(Service.class).bindInterface().equals(void.class) ? initClass : initClass.getAnnotation(Service.class).bindInterface();
+
+            if(initClass.isAnnotationPresent(Component.class))
+                type = initClass.getAnnotation(Component.class).bindInterface().equals(void.class) ?
+                        initClass : initClass.getAnnotation(Component.class).bindInterface();
+
+            if(initClass.isAnnotationPresent(Service.class))
+                type = initClass.getAnnotation(Service.class).bindInterface().equals(void.class) ?
+                        initClass : initClass.getAnnotation(Service.class).bindInterface();
+
             containerModuleFactory.setDependency(type, initClass);
             if(initClass.isAnnotationPresent(Singleton.class))singletonDependencySet.add(type);
         }
@@ -127,5 +134,9 @@ public class ServiceManager {
 
     public List<String> getModuleBasePackages() {
         return moduleBasePackages;
+    }
+
+    public static Injector getInjector(){
+        return ServiceManager.injector;
     }
 }
