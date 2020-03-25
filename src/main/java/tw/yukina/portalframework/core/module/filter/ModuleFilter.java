@@ -8,7 +8,7 @@ import java.lang.reflect.Modifier;
 public class ModuleFilter implements ClassFilter {
     @Override
     public boolean check(Class<?> classCheck) {
-        return (classCheck.isAnnotationPresent(Module.class)) &&
+        return classCheck.isAnnotationPresent(Module.class) &&
                 (!classCheck.isInterface() && !Modifier.isAbstract(classCheck.getModifiers()));
     }
 }

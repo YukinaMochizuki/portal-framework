@@ -10,7 +10,7 @@ import java.lang.reflect.Modifier;
 public class StepFilter  implements ClassFilter {
     @Override
     public boolean check(Class<?> classCheck) {
-        return (StepRunnable.class.isAssignableFrom(classCheck)) && classCheck.isAnnotationPresent(Step.class) &&
+        return StepRunnable.class.isAssignableFrom(classCheck) && classCheck.isAnnotationPresent(Step.class) &&
                 !Modifier.isAbstract(classCheck.getModifiers()) && !classCheck.isInterface();
     }
 }
