@@ -9,6 +9,7 @@ import org.apache.logging.log4j.Logger;
 
 import tw.yukina.portalframework.api.exception.TypeNotMatchException;
 import tw.yukina.portalframework.api.module.ModuleContainer;
+import tw.yukina.portalframework.api.step.StepContainer;
 import tw.yukina.portalframework.core.annotation.PreInitialization;
 import tw.yukina.portalframework.core.inject.annotation.InjectLogger;
 import tw.yukina.portalframework.core.inject.annotation.NeedClasses;
@@ -20,6 +21,7 @@ import tw.yukina.portalframework.core.service.event.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Singleton
@@ -49,5 +51,27 @@ public class ModuleManager implements tw.yukina.portalframework.api.module.Modul
                 e.printStackTrace();
             }
         }
+    }
+
+    public void addStepToModule(StepContainer stepContainer, String module){
+
+    }
+
+    public List<String> getModuleIdList(){
+        List<String> moduleIdList = new ArrayList<>();
+
+        for(ModuleContainer moduleContainer : moduleContainerList) moduleIdList.add(moduleContainer.getId());
+
+        return moduleIdList;
+    }
+
+    public Optional<ModuleContainer> getModuleContainer(String id){
+        ModuleContainer targetModuleContainer = null;
+        for(ModuleContainer moduleContainer : moduleContainerList){
+            if(moduleContainer.getId().equals(id)){
+                targetModuleContainer = moduleContainer;
+            }
+        }
+        return Optional.ofNullable(targetModuleContainer);
     }
 }

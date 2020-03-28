@@ -75,9 +75,9 @@ public class ServiceManager {
         eventBus.register(this);
 
         configureAndInit(preInitClassesSet.getClassSet(), new PreInitializationEvent());
-        configureAndInit(initClassesSet.getClassSet(), new InitializationEvent());
         configureAndInit(stepValidateClassesSet.getClassSet(), new StepValidateEvent());
         configureAndInit(jobValidateClassesSet.getClassSet(), new JobValidateEvent());
+        configureAndInit(initClassesSet.getClassSet(), new InitializationEvent());
         configureAndInit(postInitClassesSet.getClassSet(),  new PostInitializationEvent());
 
         eventBus.post(new LoadCompleteEvent());

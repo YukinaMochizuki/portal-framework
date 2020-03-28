@@ -83,4 +83,8 @@ public class PortalApplication {
         ServiceManager serviceManager = injector.getInstance(ServiceManager.class);
         serviceManager.startInit(injector);
     }
+
+    public static void ProgramAborted(){
+        System.exit(0);
+    }
 }
