@@ -7,7 +7,7 @@ import com.google.inject.Singleton;
 import org.apache.logging.log4j.Logger;
 import tw.yukina.portalframework.api.exception.StepVerifyException;
 import tw.yukina.portalframework.api.exception.TypeNotMatchException;
-import tw.yukina.portalframework.api.step.StepContainer;
+import tw.yukina.portalframework.api.step.StepPlan;
 import tw.yukina.portalframework.api.step.StepRunnable;
 import tw.yukina.portalframework.core.annotation.PreInitialization;
 import tw.yukina.portalframework.core.inject.annotation.InjectLogger;
@@ -22,7 +22,6 @@ import tw.yukina.portalframework.core.step.filter.StepFilter;
 import tw.yukina.portalframework.core.step.filter.ValidatorFilter;
 import tw.yukina.portalframework.core.step.validator.StepValidator;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -43,20 +42,20 @@ public class StepHub {
     @NeedClasses(basePackage = "tw.yukina.portalframework.core.step.validator", filters = {ValidatorFilter.class})
     private NeedClassesSet stepValidatorClassesSet;
 
-    private Set<StepContainer> stepContainerSet = new HashSet<>();
+    private Set<StepPlan> stepPlanSet = new HashSet<>();
 
     @Subscribe
     @SuppressWarnings("unchecked")
     private void onPreInit(PreInitializationEvent preInitializationEvent){
 
-        for(Class<?> stepClass : stepClassesSet.getClassSet()) {
-            try {
-                stepContainerSet.add(new StepContainerImpl((Class<? extends StepRunnable>) stepClass));
-            } catch (TypeNotMatchException e) {
-                e.printStackTrace();
-            }
-        }
-        logger.info(stepContainerSet.size());
+//        for(Class<?> stepClass : stepClassesSet.getClassSet()) {
+//            try {
+//                stepPlanSet.add(new AnnotationRunnableStepPlan((Class<? extends StepRunnable>) stepClass));
+//            } catch (TypeNotMatchException e) {
+//                e.printStackTrace();
+//            }
+//        }
+        logger.info(stepPlanSet.size());
     }
 
     @Subscribe
@@ -64,10 +63,10 @@ public class StepHub {
         logger.info(stepValidatorClassesSet.getClassSet().size());
 
         try {
-            for(StepContainer stepContainer : stepContainerSet){
+            for(StepPlan stepPlan : stepPlanSet){
                 for(Class<?> stepValidatorClass :  stepValidatorClassesSet.getClassSet()){
                     StepValidator stepValidator = (StepValidator) injector.getInstance(stepValidatorClass);
-                    stepValidator.check(stepContainer);
+                    stepValidator.check(stepPlan);
                 }
             }
         } catch (StepVerifyException e) {

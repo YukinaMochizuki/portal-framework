@@ -2,16 +2,17 @@ package tw.yukina.portalframework.core.step;
 
 import com.google.common.collect.Sets;
 import tw.yukina.portalframework.api.exception.TypeNotMatchException;
-import tw.yukina.portalframework.api.module.annotation.Module;
 import tw.yukina.portalframework.api.step.StepContainer;
+import tw.yukina.portalframework.api.step.StepPlan;
 import tw.yukina.portalframework.api.step.StepRunnable;
 import tw.yukina.portalframework.api.step.annotation.Step;
-import tw.yukina.portalframework.api.util.ObjectDefine;
+import tw.yukina.portalframework.core.inject.util.InjectUtil;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.Set;
+import java.util.*;
 
-public class StepContainerImpl implements StepContainer {
+public class AnnotationRunnableStepPlan implements StepPlan {
 
     private String id;
     private String name;
@@ -19,18 +20,22 @@ public class StepContainerImpl implements StepContainer {
     private String depiction;
     private Set<String> tags;
 
-    private Step stepAnnotation;
+    private Map<String, Class<?>> requireParametersDefine;
+    private Map<String, Class<?>> returnDefine;
+
     private Class<? extends StepRunnable> stepRunnableClass;
-    private boolean isThreadSafe;
+    private Class<? extends StepContainer> stepContainerClass;
     private boolean isDisable;
+    private boolean isClose = false;
 
+    public AnnotationRunnableStepPlan(Class<? extends StepRunnable> stepRunnableClass, Class<? extends StepContainer> stepContainerClass) throws TypeNotMatchException {
 
-    public StepContainerImpl(Class<? extends StepRunnable> stepRunnableClass) throws TypeNotMatchException {
         if(!(StepRunnable.class.isAssignableFrom(stepRunnableClass) && stepRunnableClass.isAnnotationPresent(Step.class) &&
                 !Modifier.isAbstract(stepRunnableClass.getModifiers()) && !stepRunnableClass.isInterface())) throw new TypeNotMatchException();
 
         this.stepRunnableClass = stepRunnableClass;
-        this.stepAnnotation = stepRunnableClass.getAnnotation(Step.class);
+        this.stepContainerClass = stepContainerClass;
+        Step stepAnnotation = stepRunnableClass.getAnnotation(Step.class);
 
         this.id = stepAnnotation.id();
         this.name = stepAnnotation.name();
@@ -38,8 +43,30 @@ public class StepContainerImpl implements StepContainer {
         this.depiction = stepAnnotation.depiction();
         this.tags = Sets.newHashSet(stepAnnotation.tags());
 
-        this.isThreadSafe = stepAnnotation.isThreadSafe();
+        this.requireParametersDefine = new HashMap<>();
+        this.returnDefine = new HashMap<>();
+
         this.isDisable = stepAnnotation.isDisable();
+
+        mapRequireParaDefine();
+        mapReturnDefine();
+    }
+
+    private void mapRequireParaDefine(){
+        for(Field field : stepRunnableClass.getDeclaredFields()){
+            if(InjectUtil.isFieldNeedInjectInStep(field)){
+                    requireParametersDefine.put(InjectUtil.getFieldInjectNamed(field), field.getType());
+            }
+        }
+    }
+
+    private void mapReturnDefine(){
+
+    }
+
+    private void makeDefineReadonly(){
+        requireParametersDefine = Collections.unmodifiableMap(requireParametersDefine);
+        returnDefine = Collections.unmodifiableMap(returnDefine);
     }
 
     @Override
@@ -88,23 +115,38 @@ public class StepContainerImpl implements StepContainer {
     }
 
     @Override
-    public Set<ObjectDefine> getReturnDefine() {
-        return null;
+    public Map<String, Class<?>> getReturnDefine() {
+        return returnDefine;
     }
 
     @Override
-    public void setIsThreadSafe(boolean isThreadSafe) {
-        this.isThreadSafe = isThreadSafe;
+    public Map<String, Class<?>> getRequireParametersDefine() {
+        return requireParametersDefine;
     }
 
-    @Override
-    public boolean isThreadSafe() {
-        return isThreadSafe;
-    }
-
-    @Override
     public Class<? extends StepRunnable> getStepRunnableClass() {
         return stepRunnableClass;
+    }
+
+    @Override
+    public Class<? extends StepContainer> getStepContainerClass() {
+        return stepContainerClass;
+    }
+
+    @Override
+    public boolean isClose() {
+        return isClose;
+    }
+
+    @Override
+    public void close() {
+        makeDefineReadonly();
+        isClose = true;
+    }
+
+    @Override
+    public boolean getIsAbstract() {
+        return false;
     }
 
     @Override

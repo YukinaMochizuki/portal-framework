@@ -1,8 +1,8 @@
 package tw.yukina.portalframework.core.step.validator;
 
 import tw.yukina.portalframework.api.exception.StepVerifyException;
-import tw.yukina.portalframework.api.step.StepContainer;
+import tw.yukina.portalframework.api.step.StepPlan;
 
 public interface StepValidator {
-    public void check(StepContainer stepContainer) throws StepVerifyException;
+    public void check(StepPlan stepPlan) throws StepVerifyException;
 }

@@ -1,6 +1,5 @@
 package tw.yukina.portalframework.core.step.filter;
 
-import tw.yukina.portalframework.api.module.annotation.Module;
 import tw.yukina.portalframework.api.step.StepRunnable;
 import tw.yukina.portalframework.api.step.annotation.Step;
 import tw.yukina.portalframework.core.inject.dependency.ClassFilter;

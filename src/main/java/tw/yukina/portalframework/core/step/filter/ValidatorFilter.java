@@ -11,5 +11,6 @@ public class ValidatorFilter implements ClassFilter {
     @Override
     public boolean check(Class<?> classCheck) {
         return StepValidator.class.isAssignableFrom(classCheck) && !Modifier.isAbstract(classCheck.getModifiers())
-                && !classCheck.isInterface();    }
+                && !classCheck.isInterface();
+    }
 }
