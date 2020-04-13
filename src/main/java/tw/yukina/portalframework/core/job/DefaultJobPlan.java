@@ -10,7 +10,7 @@ public class DefaultJobPlan extends AbstractBaseInfoJobPlan {
     private boolean isClose = false;
     private boolean isOption = false;
     private boolean isAbstract = false;
-    private String implementJob;
+    private String implementJob = "";
 
     private Set<InputListener> inputListenersDefine = new HashSet<>();
     private List<WorkDefine> jobWorkList = new ArrayList<>();
@@ -19,10 +19,11 @@ public class DefaultJobPlan extends AbstractBaseInfoJobPlan {
         super(id);
     }
 
-    public DefaultJobPlan(String id, boolean isAbstract) {
+    public DefaultJobPlan(String id, boolean isAbstract, String implementJob) {
         super(id);
 
         this.isAbstract = isAbstract;
+        this.implementJob = implementJob;
     }
 
     @Override
@@ -66,10 +67,5 @@ public class DefaultJobPlan extends AbstractBaseInfoJobPlan {
     @Override
     public String getImplementJob() {
         return implementJob;
-    }
-
-    @Override
-    public void setImplementJob(String implementJob) {
-        this.implementJob = implementJob;
     }
 }
