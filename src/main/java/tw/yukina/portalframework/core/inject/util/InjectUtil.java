@@ -8,7 +8,8 @@ import java.lang.reflect.Field;
 
 public class InjectUtil {
     public static boolean isFieldNeedInjectInStep(Field field){
-        return field.isAnnotationPresent(Inject.class) || field.isAnnotationPresent(javax.inject.Inject.class);
+        return field.isAnnotationPresent(Inject.class) ||
+                field.isAnnotationPresent(javax.inject.Inject.class);
     }
 
     public static String getFieldInjectNamed(Field field){

@@ -20,14 +20,17 @@ import tw.yukina.portalframework.core.service.event.PreInitializationEvent;
 import tw.yukina.portalframework.core.service.event.StepValidateEvent;
 import tw.yukina.portalframework.core.step.filter.StepFilter;
 import tw.yukina.portalframework.core.step.filter.ValidatorFilter;
+import tw.yukina.portalframework.core.step.plan.AnnotationRunnableStepPlan;
 import tw.yukina.portalframework.core.step.validator.StepValidator;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;
 import java.util.Set;
 
 @Service
 @Singleton
 @PreInitialization
+@SuppressWarnings("UnstableApiUsage")
 public class StepHub {
 
     @Inject
@@ -45,17 +48,8 @@ public class StepHub {
     private Set<StepPlan> stepPlanSet = new HashSet<>();
 
     @Subscribe
-    @SuppressWarnings("unchecked")
     private void onPreInit(PreInitializationEvent preInitializationEvent){
-
-//        for(Class<?> stepClass : stepClassesSet.getClassSet()) {
-//            try {
-//                stepPlanSet.add(new AnnotationRunnableStepPlan((Class<? extends StepRunnable>) stepClass));
-//            } catch (TypeNotMatchException e) {
-//                e.printStackTrace();
-//            }
-//        }
-        logger.info(stepPlanSet.size());
+        scanAnnRunnableStepPlan();
     }
 
     @Subscribe
@@ -73,5 +67,18 @@ public class StepHub {
             e.printStackTrace();
             PortalApplication.ProgramAborted();
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void scanAnnRunnableStepPlan(){
+        for(Class<?> stepClass : stepClassesSet.getClassSet()) {
+            try {
+                stepPlanSet.add(new AnnotationRunnableStepPlan((Class<? extends StepRunnable>) stepClass));
+            } catch (TypeNotMatchException | InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+
+        logger.info(stepPlanSet.size());
     }
 }
