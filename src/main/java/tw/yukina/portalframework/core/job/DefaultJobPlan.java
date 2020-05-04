@@ -8,11 +8,12 @@ import java.util.*;
 public class DefaultJobPlan extends AbstractBaseInfoJobPlan {
 
     private boolean isClose = false;
+    private boolean isDisable = false;
     private boolean isOption = false;
     private boolean isAbstract = false;
     private String implementJob = "";
 
-    private Set<InputListener> inputListenersDefine = new HashSet<>();
+    private Set<InputListener<?>> inputListenersDefine = new HashSet<>();
     private List<WorkDefine> jobWorkList = new ArrayList<>();
 
     public DefaultJobPlan(String id) {
@@ -55,7 +56,17 @@ public class DefaultJobPlan extends AbstractBaseInfoJobPlan {
     }
 
     @Override
-    public Set<InputListener> getInputListenersDefine() {
+    public void setDisable(boolean disable) {
+        isDisable = disable;
+    }
+
+    @Override
+    public boolean isDisable() {
+        return isDisable;
+    }
+
+    @Override
+    public Set<InputListener<?>> getInputListenersDefine() {
         return inputListenersDefine;
     }
 

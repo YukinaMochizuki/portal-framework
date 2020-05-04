@@ -9,7 +9,7 @@ import org.apache.logging.log4j.Logger;
 
 import tw.yukina.portalframework.api.exception.TypeNotMatchException;
 import tw.yukina.portalframework.api.module.ModuleContainer;
-import tw.yukina.portalframework.api.step.StepContainer;
+import tw.yukina.portalframework.api.step.StepPlan;
 import tw.yukina.portalframework.core.annotation.PreInitialization;
 import tw.yukina.portalframework.core.inject.annotation.InjectLogger;
 import tw.yukina.portalframework.core.inject.annotation.NeedClasses;
@@ -19,9 +19,7 @@ import tw.yukina.portalframework.core.module.injector.ModuleBasePackagesInjector
 import tw.yukina.portalframework.core.service.annotation.Service;
 import tw.yukina.portalframework.core.service.event.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @Singleton
@@ -37,13 +35,13 @@ public class ModuleManager implements tw.yukina.portalframework.api.module.Modul
     @NeedClasses(basePackageInjector = ModuleBasePackagesInjector.class, filters = ModuleFilter.class)
     private NeedClassesSet moduleClassesSet;
 
-    private List<ModuleContainer> moduleContainerList;
+    private Set<ModuleContainer> moduleContainerList;
 
     @Subscribe
     public void onPreInit(PreInitializationEvent preInitializationEvent){
         logger.info("Module on preInit !!!");
 
-        moduleContainerList = new ArrayList<>();
+        moduleContainerList = new HashSet<>();
         for(Class<?> moduleClass : moduleClassesSet.getClassSet()){
             try {
                 moduleContainerList.add(new ModuleContainerImpl(moduleClass, injector));
@@ -53,7 +51,7 @@ public class ModuleManager implements tw.yukina.portalframework.api.module.Modul
         }
     }
 
-    public void addStepToModule(StepContainer stepContainer, String module){
+    public void addStepToModule(StepPlan stepPlan, String module){
 
     }
 

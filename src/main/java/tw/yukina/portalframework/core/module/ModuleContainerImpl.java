@@ -3,10 +3,10 @@ package tw.yukina.portalframework.core.module;
 import com.google.common.collect.Sets;
 import com.google.inject.Injector;
 import tw.yukina.portalframework.api.exception.TypeNotMatchException;
-import tw.yukina.portalframework.api.job.JobContainer;
+import tw.yukina.portalframework.api.job.JobPlan;
 import tw.yukina.portalframework.api.module.ModuleContainer;
 import tw.yukina.portalframework.api.module.annotation.Module;
-import tw.yukina.portalframework.api.step.StepContainer;
+import tw.yukina.portalframework.api.step.StepPlan;
 
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -20,8 +20,8 @@ public class ModuleContainerImpl implements ModuleContainer {
     private String shortDepiction;
     private String depiction;
     private Set<String> tags;
-    private List<StepContainer> stepContainerList;
-    private List<JobContainer> jobContainerList;
+    private List<StepPlan> stepPlanList;
+    private List<JobPlan> jobPlanList;
 
     private Class<?> moduleClass;
     private Object moduleObject;
@@ -56,8 +56,8 @@ public class ModuleContainerImpl implements ModuleContainer {
         this.depiction = moduleAnnotation.depiction();
         this.tags = Sets.newHashSet(moduleAnnotation.tags());
 
-        this.stepContainerList = new ArrayList<>();
-        this.jobContainerList = new ArrayList<>();
+        this.stepPlanList = new ArrayList<>();
+        this.jobPlanList = new ArrayList<>();
     }
 
     @Override
@@ -106,12 +106,12 @@ public class ModuleContainerImpl implements ModuleContainer {
     }
 
     @Override
-    public List<StepContainer> getStepContainerList() {
-        return stepContainerList;
+    public List<StepPlan> getStepPlanList() {
+        return stepPlanList;
     }
 
     @Override
-    public List<JobContainer> getJobContainerList() {
-        return jobContainerList;
+    public List<JobPlan> getJobPlanList() {
+        return jobPlanList;
     }
 }

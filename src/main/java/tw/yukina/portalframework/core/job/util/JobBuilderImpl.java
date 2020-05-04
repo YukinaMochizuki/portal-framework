@@ -21,7 +21,7 @@ public class JobBuilderImpl implements JobBuilder {
     private boolean isAbstract = false;
 
     private Set<String> tags = new HashSet<>();
-    private Set<InputListener> inputListeners = new HashSet<>();
+    private Set<InputListener<?>> inputListeners = new HashSet<>();
     private List<WorkDefine> jobWorkList = new ArrayList<>();
 
     public JobBuilderImpl(String id){
@@ -65,13 +65,13 @@ public class JobBuilderImpl implements JobBuilder {
     }
 
     @Override
-    public JobBuilder addInputListenersDefine(InputListener inputListener) {
+    public JobBuilder addInputListenersDefine(InputListener<?> inputListener) {
         inputListeners.add(inputListener);
         return this;
     }
 
     @Override
-    public JobBuilder setInputListenersDefine(Set<InputListener> inputListeners) {
+    public JobBuilder setInputListenersDefine(Set<InputListener<?>> inputListeners) {
         this.inputListeners = inputListeners;
         return this;
     }
